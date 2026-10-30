@@ -455,18 +455,20 @@ body.board-folded .hud-panel #goban {
     position: relative; width: 100%; height: auto; max-height: none;
     border-right: none; border-bottom: 1px solid rgba(58,108,255,0.25);
     padding: 0.65rem 0.75rem 0.85rem;
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    display: grid; grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
     grid-template-areas:
       "head head"
-      "board meta"
+      "board legend"
+      "board hint"
+      "board log"
       "void void";
-    gap: 0.45rem 0.7rem; z-index: 20;
+    gap: 0.35rem 0.7rem; z-index: 20; align-items: start;
   }
   .hud-head { grid-area: head; }
-  #goban { grid-area: board; max-width: 210px; width: 100%; margin: 0; touch-action: manipulation; }
-  .hud-legend, .hud-hint, .kifu-log { grid-area: meta; }
-  .hud-hint { font-size: 0.58rem; }
-  .kifu-log { max-height: 6.5rem; }
+  #goban { grid-area: board; max-width: 200px; width: 100%; margin: 0; touch-action: manipulation; }
+  .hud-legend { grid-area: legend; flex-direction: column; gap: 0.25rem; align-items: flex-start; }
+  .hud-hint { grid-area: hint; font-size: 0.58rem; }
+  .kifu-log { grid-area: log; max-height: 7rem; }
   .void-bowl { grid-area: void; min-height: 3rem; margin-top: 0; }
   .scroll-stage {
     position: relative; left: 0; right: 0; top: auto; bottom: auto;
