@@ -215,8 +215,10 @@
   canvas.addEventListener("pointerleave", () => { hover = null; });
 
   canvas.addEventListener("pointerdown", (e) => {
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
     const g = xyFromEvent(e);
     if (g.x < 0 || g.x >= N || g.y < 0 || g.y >= N) return;
+    e.preventDefault();
     ripples.push({ x: g.px, y: g.py, t: 0, color: "rgba(110,176,255,0.9)" });
 
     // screen ripple

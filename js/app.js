@@ -33,6 +33,7 @@
   let koRunning = false;
   const POV_CYCLE = ["both", "hao", "hu"];
   let povIdx = 0;
+  let navLockUntil = 0;
 
   const DANMAKU = [
     { t: "郝富申力挺", hot: true },
@@ -84,6 +85,7 @@
     const on = btnFilter.getAttribute("aria-pressed") !== "true";
     btnFilter.setAttribute("aria-pressed", String(on));
     document.body.dataset.filter = on ? "verified" : "all";
+    btnFilter.textContent = on ? "可核实 · ON" : "只看可核实";
   });
 
   btnPov.addEventListener("click", () => {
@@ -94,35 +96,58 @@
       v === "both" ? "双视角 · BOTH" : v === "hao" ? "单视角 · 郝" : "单视角 · 胡";
   });
 
+  function scrollRootIsStage() {
+    const ov = getComputedStyle(stage).overflowY;
+    return (ov === "auto" || ov === "scroll") && stage.scrollHeight > stage.clientHeight + 4;
+  }
   function goTo(i, smooth = true) {
     i = Math.max(0, Math.min(chapters.length - 1, i));
     current = i;
-    chapters[i].scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+    navLockUntil = performance.now() + (smooth ? 900 : 100);
+    const behavior = smooth ? "smooth" : "auto";
+    const el = chapters[i];
+    if (scrollRootIsStage()) {
+      const top = el.getBoundingClientRect().top - stage.getBoundingClientRect().top + stage.scrollTop - 8;
+      stage.scrollTo({ top: Math.max(0, top), behavior });
+    } else {
+      const y = el.getBoundingClientRect().top + window.scrollY - 64;
+      window.scrollTo({ top: Math.max(0, y), behavior });
+    }
     kifuBtns.forEach((b, idx) => b.classList.toggle("active", idx === i));
     if (window.GobanAPI && window.GobanAPI.placeUpTo) window.GobanAPI.placeUpTo(i);
   }
   kifuBtns.forEach((b) => b.addEventListener("click", () => goTo(+b.dataset.goto)));
   btnEnter.addEventListener("click", () => goTo(1));
 
-  const io = new IntersectionObserver((entries) => {
-    let best = null, bestR = 0;
-    entries.forEach((en) => {
-      en.target.classList.toggle("in-view", en.isIntersecting);
-      if (en.isIntersecting && en.intersectionRatio > bestR) {
-        bestR = en.intersectionRatio;
-        best = en.target;
+  function bindChapterIO() {
+    if (window.__gobanIO) window.__gobanIO.disconnect();
+    const root = scrollRootIsStage() ? stage : null;
+    const io = new IntersectionObserver((entries) => {
+      let best = null, bestR = 0;
+      entries.forEach((en) => {
+        en.target.classList.toggle("in-view", en.isIntersecting);
+        if (en.isIntersecting && en.intersectionRatio > bestR) {
+          bestR = en.intersectionRatio;
+          best = en.target;
+        }
+      });
+      if (best && performance.now() > navLockUntil) {
+        const idx = chapters.indexOf(best);
+        if (idx >= 0 && idx !== current) {
+          current = idx;
+          kifuBtns.forEach((b, i) => b.classList.toggle("active", i === idx));
+          if (window.GobanAPI && window.GobanAPI.placeUpTo) window.GobanAPI.placeUpTo(idx);
+        }
       }
-    });
-    if (best) {
-      const idx = chapters.indexOf(best);
-      if (idx >= 0) {
-        current = idx;
-        kifuBtns.forEach((b, i) => b.classList.toggle("active", i === idx));
-        if (window.GobanAPI && window.GobanAPI.placeUpTo) window.GobanAPI.placeUpTo(idx);
-      }
-    }
-  }, { root: stage, threshold: [0.35, 0.55, 0.7] });
-  chapters.forEach((c) => io.observe(c));
+    }, { root, threshold: [0.25, 0.45, 0.65], rootMargin: root ? "0px" : "-10% 0px -35% 0px" });
+    chapters.forEach((c) => io.observe(c));
+    window.__gobanIO = io;
+  }
+  bindChapterIO();
+  window.addEventListener("resize", () => {
+    clearTimeout(window.__gobanIOTimer);
+    window.__gobanIOTimer = setTimeout(bindChapterIO, 150);
+  });
 
   /* Kifu log sync */
   window.GobanAPI = window.GobanAPI || {};

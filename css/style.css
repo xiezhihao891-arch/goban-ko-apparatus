@@ -25,6 +25,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Author display:* otherwise overrides HTML [hidden] in Chromium — overlays blocked the whole UI */
+[hidden] { display: none !important; }
 html { scroll-behavior: smooth; height: 100%; }
 body {
   font-family: var(--sans);
@@ -35,12 +37,16 @@ body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
-body.filter-verified [data-evidence="rumor"],
-body.filter-verified .badge.rumor,
-body.filter-verified .quote-block.rumor {
+body[data-filter="verified"] [data-evidence="rumor"],
+body[data-filter="verified"] .badge.rumor,
+body[data-filter="verified"] .quote-block.rumor,
+body[data-filter="verified"] .tag.rumor {
   opacity: 0.14;
   filter: grayscale(1);
   pointer-events: none;
+}
+body[data-filter="verified"] .ch:has(> .ch-inner > .ch-head > .badge.rumor):not(:has(.badge.on-record)) {
+  opacity: 0.35;
 }
 body[data-pov="hao"] .pov.hu { opacity: 0.28; transform: scale(0.98); }
 body[data-pov="hu"] .pov.hao { opacity: 0.28; transform: scale(0.98); }
@@ -50,8 +56,8 @@ a { color: var(--indium); }
 .mono { font-family: var(--mono); letter-spacing: 0.04em; }
 
 #lacquerDust {
-  position: fixed; inset: 0; pointer-events: none; z-index: 9500;
-  opacity: 0.4; mix-blend-mode: screen;
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  opacity: 0.35; mix-blend-mode: screen;
 }
 .indigo-veil {
   position: fixed; inset: 0; pointer-events: none; z-index: 1;
@@ -376,9 +382,10 @@ body.board-folded .hud-panel #goban {
 
 /* Danmaku */
 .danmaku-layer {
-  position: fixed; inset: 0; z-index: 200; background: rgba(5,2,2,0.72);
+  position: fixed; inset: 0; z-index: 400; background: rgba(5,2,2,0.82);
   backdrop-filter: blur(6px); display: grid; place-items: center; padding: 1rem;
 }
+.danmaku-layer[hidden] { display: none !important; }
 .danmaku-panel {
   width: min(720px, 96vw); max-height: 85vh; overflow: hidden;
   border: 1px solid var(--indigo); border-radius: 0.6rem;
@@ -411,9 +418,10 @@ body.board-folded .hud-panel #goban {
 
 /* Lightbox */
 .lightbox {
-  position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.88);
+  position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.88);
   display: grid; place-items: center; padding: 1.5rem;
 }
+.lightbox[hidden] { display: none !important; }
 .lightbox img { max-width: min(920px, 94vw); max-height: 78vh; object-fit: contain; border: 1px solid rgba(58,108,255,0.4); box-shadow: 0 0 40px rgba(58,108,255,0.25); }
 .lb-close {
   position: absolute; top: 1rem; right: 1rem; font-size: 1.4rem;
@@ -425,7 +433,7 @@ body.board-folded .hud-panel #goban {
 
 /* Ripple on goban click */
 .ripple-fx {
-  position: fixed; pointer-events: none; z-index: 9600; border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 50; border-radius: 50%;
   border: 2px solid var(--indigo); animation: ripple 0.7s ease-out forwards;
 }
 @keyframes ripple {
@@ -435,20 +443,51 @@ body.board-folded .hud-panel #goban {
 
 @media (max-width: 960px) {
   :root { --hud-w: 0px; }
+  html, body { height: auto; min-height: 100%; }
+  body { overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .topbar {
+    padding-left: 1rem; padding-right: 1rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-actions { gap: 0.3rem; }
+  .chip { font-size: 0.62rem; padding: 0.3rem 0.5rem; }
   .hud-panel {
     position: relative; width: 100%; height: auto; max-height: none;
     border-right: none; border-bottom: 1px solid rgba(58,108,255,0.25);
-    padding: 0.75rem;
+    padding: 0.65rem 0.75rem 0.85rem;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "head head"
+      "board meta"
+      "void void";
+    gap: 0.45rem 0.7rem; z-index: 20;
   }
-  body { overflow: auto; }
+  .hud-head { grid-area: head; }
+  #goban { grid-area: board; max-width: 210px; width: 100%; margin: 0; touch-action: manipulation; }
+  .hud-legend, .hud-hint, .kifu-log { grid-area: meta; }
+  .hud-hint { font-size: 0.58rem; }
+  .kifu-log { max-height: 6.5rem; }
+  .void-bowl { grid-area: void; min-height: 3rem; margin-top: 0; }
   .scroll-stage {
-    position: relative; left: 0; padding: 1rem 1rem 3rem;
+    position: relative; left: 0; right: 0; top: auto; bottom: auto;
+    width: 100%; height: auto;
+    padding: 0.75rem 1rem 5.5rem;
     overflow: visible;
+    scroll-snap-type: none;
   }
-  .topbar { padding-left: 1rem; position: sticky; }
-  .kifu-rail { right: 0.25rem; transform: translateY(-40%); scale: 0.9; }
+  .ch { min-height: 0; padding: 1.2rem 0 2rem; opacity: 1; transform: none; }
+  .ch.in-view { opacity: 1; }
+  .kifu-rail {
+    top: auto; bottom: 0; left: 0; right: 0; transform: none;
+    flex-direction: row; justify-content: safe center; gap: 0.25rem;
+    padding: 0.45rem 0.4rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, transparent, rgba(10,6,4,0.92) 30%);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    z-index: 120;
+  }
+  .kifu-btn { width: 2.35rem; height: 2.35rem; flex: 0 0 auto; }
+  .kifu-btn.active, .kifu-btn:hover { transform: translateY(-2px); }
   .dual-pov, .gallery.trio, .lawyer-row { grid-template-columns: 1fr; }
   .gallery.duo { grid-template-columns: 1fr 1fr; }
-  #goban { max-width: 320px; margin: 0 auto; }
-  .hud-panel { display: grid; grid-template-columns: 1fr; }
+  .display { font-size: clamp(1.8rem, 9vw, 2.6rem); }
 }
