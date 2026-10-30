@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0604" />
+<meta name="description" content="十九路·劫争仪 / Goban Ko-Apparatus · 郝富申 × 胡先煦 · 《棋魂》蚂蚁CP粉丝解说时间线（非官方，标注传闻与可核实）" />
+<title>十九路·劫争仪 · 郝胡 / 蚂蚁 · 《棋魂》</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-filter="all" data-pov="both" data-ko="idle">
+<canvas id="lacquerDust" aria-hidden="true"></canvas>
+<div class="indigo-veil" aria-hidden="true"></div>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-brand">
+    <span class="brand-glyph" aria-hidden="true">⬤</span>
+    <div class="brand-text">
+      <strong>十九路·劫争仪</strong>
+      <span>Goban Ko-Apparatus · 郝胡 / 蚂蚁</span>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="chip" id="btnPov" title="双视角">双视角 · BOTH</button>
+    <button class="chip" id="btnFilter" aria-pressed="false" title="隐藏传闻">只看可核实</button>
+    <button class="chip sound" id="btnSound" aria-pressed="false" title="落子音效默认静音">🔇 落子</button>
+  </div>
+</header>
+
+<nav class="kifu-rail" id="kifuRail" aria-label="棋谱磁章">
+  <button class="kifu-btn active" data-goto="0"><i>○</i><span>仪</span></button>
+  <button class="kifu-btn" data-goto="1"><i>19</i><span>拍</span></button>
+  <button class="kifu-btn" data-goto="2"><i>20</i><span>播</span></button>
+  <button class="kifu-btn" data-goto="3"><i>526</i><span>劫</span></button>
+  <button class="kifu-btn" data-goto="4"><i>7</i><span>断</span></button>
+  <button class="kifu-btn" data-goto="5"><i>静</i><span>空</span></button>
+  <button class="kifu-btn" data-goto="6"><i>25</i><span>函</span></button>
+  <button class="kifu-btn" data-goto="7"><i>复</i><span>论</span></button>
+  <button class="kifu-btn" data-goto="8"><i>26</i><span>潮</span></button>
+  <button class="kifu-btn" data-goto="9"><i>◎</i><span>终</span></button>
+</nav>
+
+<aside class="hud-panel" id="hudPanel" aria-label="棋盘 HUD">
+  <div class="hud-head">
+    <span class="hud-title">19×19 · 深漆盘</span>
+    <span class="ko-clock" id="koClock" title="劫争计时">KO 00:00</span>
+  </div>
+  <canvas id="goban" width="520" height="520" role="img" aria-label="十九路棋盘，黑子郝富申，白子胡先煦"></canvas>
+  <div class="hud-legend">
+    <span><i class="stone black"></i> 黑 · 郝富申</span>
+    <span><i class="stone white"></i> 白 · 胡先煦</span>
+  </div>
+  <p class="hud-hint">点星位 / 节点落子 · 天元开弹幕廊 · 提子入黑洞名单</p>
+  <ol class="kifu-log" id="kifuLog" aria-live="polite"></ol>
+  <div class="void-bowl" id="voidBowl" title="被提子 · 拉黑隐喻">
+    <span class="void-label">提子 / 黑名单</span>
+    <div class="void-stones" id="voidStones"></div>
+  </div>
+</aside>
+
+<main class="scroll-stage" id="stage">
+
+  <!-- 0 BOOT -->
+  <section class="ch" id="ch0" data-ch="仪 · BOOT">
+    <div class="splash">
+      <p class="eyebrow mono">NOT A FEUD · A TRIANGLE OF VIBES / FANS / LAW</p>
+      <h1 class="display">十九路<span class="thin">·</span>劫争仪</h1>
+      <p class="sub">郝富申 × 胡先煦 · 《棋魂》光亮 / 郝胡 · CP 粉自称「蚂蚁」</p>
+      <p class="lede">这不是「两位演员互撕」的故事。戏剧侧卖过氛围 → 粉丝自发磕 CP → 2021 郝侧恋情丑闻 → 胡营长期反腐切割 → 2025 律师函。下方每枚棋子都标了<strong>可核实 / 传闻</strong>。不虚构恋情，也不是李明德那条线。</p>
+      <div class="splash-tags">
+        <span class="tag on-record">可核实</span>
+        <span class="tag rumor">传闻 / 饭圈口号</span>
+        <span class="tag cast">黑=郝 · 白=胡</span>
+      </div>
+      <button type="button" class="enter-btn" id="btnEnter">落子开局 · 进入复盘</button>
+      <figure class="hero-fig" data-lightbox>
+        <img src="assets/05-wiki-qihun.jpg" alt="《棋魂》网络剧海报（维基媒体）" width="240" height="426" loading="eager" />
+        <figcaption>海报 · Wikimedia · 官方物料</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 1 2019 shoot -->
+  <section class="ch" id="ch1" data-ch="01 · 2019 开拍" data-stone="B" data-coord="D4">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 1 · 黑</span>
+        <h2>2019 · 杭州棋盘上的对手戏</h2>
+        <span class="badge on-record">可核实</span>
+      </header>
+      <div class="dual-pov">
+        <article class="pov hao" data-pov-side="hao">
+          <h3>郝侧 POV</h3>
+          <p>郝富申饰俞亮（塔矢亮对应），天才棋手、亦敌亦友线。拍摄期与胡先煦有对手戏与花絮互动——这是<strong>剧组物料</strong>层面，不是恋情声明。</p>
+        </article>
+        <article class="pov hu" data-pov-side="hu">
+          <h3>胡侧 POV</h3>
+          <p>胡先煦饰时光（进藤光对应）。《棋魂》系日漫翻拍，围棋/青春励志奇幻，非耽改本。后文工作室反复强调：不愿走「卖腐蹿红」捷径。</p>
+        </article>
+      </div>
+      <div class="gallery trio">
+        <figure data-lightbox><img src="assets/09-itc-7916.jpeg" alt="棋魂宣传静帧" loading="lazy" /><figcaption>宣发静帧 · 2010s 末—2020</figcaption></figure>
+        <figure data-lightbox><img src="assets/10-iqiyi-v154632282.jpg" alt="爱奇艺物料" loading="lazy" /><figcaption>爱奇艺剧照物料</figcaption></figure>
+        <figure data-lightbox><img src="assets/06-bilibili-71dd.jpg" alt="棋魂相关封面" loading="lazy" /><figcaption>传播向封面图</figcaption></figure>
+      </div>
+      <p class="note">坐标隐喻：右下星位附近落第一子——布局未定，气很足。</p>
+    </div>
+  </section>
+
+  <!-- 2 2020 premiere -->
+  <section class="ch" id="ch2" data-ch="02 · 2020 首播 CP 潮" data-stone="W" data-coord="Q16">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 2 · 白</span>
+        <h2>2020-10-27 · 爱奇艺首播 · 「亮光 / 郝胡」升温</h2>
+        <span class="badge on-record">可核实（播出）</span>
+        <span class="badge rumor">CP 名 / 「蚂蚁」= 饭圈自称</span>
+      </header>
+      <p>2020年10月27日—11月5日爱奇艺上线。角色「时光×俞亮」被粉圈配成「光亮」；演员层则被喊「郝胡」。CP 粉自称「蚂蚁」——这是<strong>粉丝社群命名</strong>，不是官方情侣认证。</p>
+      <div class="callout indium">
+        <p><strong>三角的一边：</strong>剧宣花絮、互动短视频强化了「氛围感」；粉丝据此脑补戏外关系。氛围 ≠ 恋情证据。</p>
+      </div>
+      <div class="gallery duo">
+        <figure data-lightbox><img src="assets/11-iqiyi-pv151739.jpg" alt="棋魂剧照" loading="lazy" /><figcaption>剧照 / PV 截帧</figcaption></figure>
+        <figure data-lightbox><img src="assets/12-iqiyi-v158932323.jpg" alt="棋魂剧照二" loading="lazy" /><figcaption>对手戏视觉</figcaption></figure>
+      </div>
+      <div class="quote-block rumor" data-evidence="rumor">
+        <p>「蚂蚁」「吃红利」等口号多见于饭圈互撕与复盘帖，<strong>非双方正式声明原文</strong>——本页标为传闻/口号层。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 526 scandal -->
+  <section class="ch" id="ch3" data-ch="03 · 2021-05 526" data-stone="B" data-coord="K10">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 3 · 黑 · 天元附近劫</span>
+        <h2>2021-05-26/27 · 「526」恋情丑闻与公开道歉</h2>
+        <span class="badge on-record">可核实（道歉声明）</span>
+        <span class="badge rumor">具体瓜料细节=网传</span>
+      </header>
+      <div class="dual-pov">
+        <article class="pov hao" data-pov-side="hao">
+          <h3>郝 · 公开致歉（on-record）</h3>
+          <blockquote>
+            「我的确先后有过恋爱经历，但并非当下网络所流传的版本。由于我个人原因未能妥善处理好感情问题，对此我深感抱歉……最后向所有人说一声对不起！」
+          </blockquote>
+          <p class="cite">——郝富申 2021-05-27 致歉声明（媒体转载）</p>
+        </article>
+        <article class="pov hu" data-pov-side="hu">
+          <h3>胡营 / 剧粉反应</h3>
+          <p>同日前后，《棋魂》官博因外包「小糖人」矩阵发花絮并配「郝胡虽然 be 了…」文案致歉。CP 叙事在丑闻冲击下碎裂；许多「蚂蚁」选择脱粉或转乐子。</p>
+        </article>
+      </div>
+      <div class="gallery duo">
+        <figure data-lightbox><img src="assets/07-bilibili-10b5.jpg" alt="相关传播图" loading="lazy" /><figcaption>传播期封面</figcaption></figure>
+        <figure data-lightbox><img src="assets/13-baidu-fd039.jpeg" alt="公开形象照" loading="lazy" /><figcaption>艺人公开形象照</figcaption></figure>
+      </div>
+      <p class="note">棋理隐喻：这步像在天元掀劫——气紧，劫材开始出现。</p>
+    </div>
+  </section>
+
+  <!-- 4 2021-07 anti-CP -->
+  <section class="ch" id="ch4" data-ch="04 · 2021-07 反腐切割" data-stone="W" data-coord="C16">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 4 · 白</span>
+        <h2>2021-07 · 胡工作室回应物料泄露 · 明确反「炒 CP」</h2>
+        <span class="badge on-record">可核实</span>
+      </header>
+      <p>剧组被指未经演员同意放出片场花絮、引导 CP。胡先煦工作室发长文批评制作方宣发理念分歧；强调<strong>不同意</strong>靠卖腐物料换热度。工作人员后有手写道歉称个人擅自发布。</p>
+      <div class="callout lacquer">
+        <p><strong>长期姿态：</strong>此后胡营被粉圈描述为「长期反腐 / 杀 CP」——「反腐」在饭圈语里指抵制卖腐捆绑，不是反腐败纪委。请勿字面误读。</p>
+      </div>
+      <figure class="wide" data-lightbox>
+        <img src="assets/14-baidu-63d9f.jpeg" alt="胡先煦公开形象" loading="lazy" />
+        <figcaption>公开形象 · 切割叙事的视觉锚点</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 5 silence -->
+  <section class="ch" id="ch5" data-ch="05 · 沉默数年" data-stone="B" data-coord="R3">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 5–N · 空劫循环</span>
+        <h2>约 2021 末—2025 中 · 正主少互动 · 粉圈自行续写</h2>
+        <span class="badge rumor">粉圈生态观察</span>
+      </header>
+      <p>公开层面：双方少有同框营业；郝侧形象受 526 冲击；胡侧单人作品线推进。粉圈侧：二创、时间线盘点、AO3/超话仍在——形成「正主课题分离」的顽强 CP 生态（行业评论常用词）。</p>
+      <div class="ko-demo" id="koDemo">
+        <button type="button" class="ko-btn" id="btnKo">启动劫争演示 · 粉 ↔ 偶像拉力</button>
+        <div class="ko-meter"><div class="ko-fill" id="koFill"></div></div>
+        <p class="ko-caption mono" id="koCaption">IDLE · 等待落劫</p>
+      </div>
+      <div class="gallery duo">
+        <figure data-lightbox><img src="assets/15-baidu-fcfaa.jpeg" alt="公开照" loading="lazy" /><figcaption>公开活动向</figcaption></figure>
+        <figure data-lightbox><img src="assets/04-ettoday-8365868.jpg" alt="胡先煦" loading="lazy" /><figcaption>媒体配图 · ETtoday</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 2025 lawyer -->
+  <section class="ch" id="ch6" data-ch="06 · 2025-08 律师函" data-stone="W" data-coord="K10">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 · 白提劫</span>
+        <h2>2025-08-17 生日直播 → 08-19 律师声明 → 08-20 大规模拉黑</h2>
+        <span class="badge on-record">可核实（声明 / 报道）</span>
+      </header>
+      <div class="timeline-strip">
+        <div><strong>08-17</strong><span>25 岁生日直播；弹幕被「郝富申力挺」等 CP 话术刷屏（报道转述）</span></div>
+        <div><strong>08-19</strong><span>工作室委托律师声明：指控部分网友长期捏造与郝的不实情感关系、人身攻击；取证列账号</span></div>
+        <div><strong>08-20</strong><span>大规模拉黑含剪辑/时间线博主；争议「误伤二创」vs「维权必要」登上热搜</span></div>
+      </div>
+      <div class="quote-block on-record" data-evidence="on-record">
+        <p>声明核心（媒体转述 on-record）：部分网友捏造不实情感谣言、人身攻击，侵犯名誉权与人格尊严；网络非法外之地。</p>
+        <p class="cite">来源：ETtoday / 中华网等 2025-08 报道</p>
+      </div>
+      <div class="lawyer-row">
+        <figure data-lightbox data-lawyer>
+          <img src="assets/16-lawyer-8365873.jpg" alt="律师声明扫描件配图一" loading="lazy" />
+          <figcaption>律师声明相关扫描 · 点开灯箱</figcaption>
+        </figure>
+        <figure data-lightbox data-lawyer>
+          <img src="assets/17-lawyer-8365872.jpg" alt="律师声明扫描件配图二" loading="lazy" />
+          <figcaption>声明配图二 · ETtoday</figcaption>
+        </figure>
+        <figure data-lightbox>
+          <img src="assets/01-ettoday-e8365871.jpg" alt="报道配图" loading="lazy" />
+          <figcaption>报道主图 · ETtoday 3019414</figcaption>
+        </figure>
+      </div>
+      <div class="quote-block rumor" data-evidence="rumor">
+        <p>饭圈回击口号如「忘本」「敢说没吃过 CP 红利吗？」属<strong>网友言论层</strong>，非胡方法律文书原文。</p>
+      </div>
+      <p class="note">棋盘：点天元可开「蚂蚁弹幕全息廊」；被提子落入右侧黑洞名单碗。</p>
+    </div>
+  </section>
+
+  <!-- 7 essays -->
+  <section class="ch" id="ch7" data-ch="07 · 2025-09 行业复盘" data-stone="B" data-coord="F17">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 · 参考图</span>
+        <h2>2025-09 · 行业稿：提纯、反噬、「恨比爱长久」</h2>
+        <span class="badge on-record">评论文章可核对</span>
+      </header>
+      <p>《娱乐资本论》等稿件将郝胡与其他「吃过 CP 红利再切割」案例并置：律师函 / 拉黑之后，部分粉转化为乐子人，用梗与控评占领评论区。这是<strong>媒介研究式观察</strong>，不是司法结论。</p>
+      <ul class="bullet-dense">
+        <li>关键词：提纯、发卖 CP 粉、回踩文化、乐子追星</li>
+        <li>郝侧评论区被描述为长期残留 CP 话术（粉丝观察帖 / 行业文）</li>
+        <li>AO3 等平台出现泄愤向同人标题梗（如「爱你老妈，法庭见」）——创作层，非新闻事实认定</li>
+      </ul>
+      <div class="gallery duo">
+        <figure data-lightbox><img src="assets/02-ettoday-d8365869.jpg" alt="报道配图" loading="lazy" /><figcaption>ETtoday 配图</figcaption></figure>
+        <figure data-lightbox><img src="assets/03-ettoday-d8365870.jpg" alt="报道配图" loading="lazy" /><figcaption>花絮传播争议视觉</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 2026 live -->
+  <section class="ch" id="ch8" data-ch="08 · 2026-01 潮未退" data-stone="W" data-coord="P4">
+    <div class="ch-inner">
+      <header class="ch-head">
+        <span class="move mono">手数 · 官子阶段?</span>
+        <h2>2026-01 · 直播弹幕仍被 CP 粉淹没（社交观察）</h2>
+        <span class="badge rumor">社交平台观察 / 博主转述</span>
+      </header>
+      <p>2026年1月，娱评博主转述：郝富申直播弹幕与贡献榜前列仍多见郝胡 CP 粉话术，主播侧显得难以互动。这属于<strong>平台现象转述</strong>，强度因场次而异，不作定量结论。</p>
+      <div class="callout indium">
+        <p>劫还没停：偶像要提纯，粉圈用弹幕续气——劫争仪的「气」在评论区循环。</p>
+      </div>
+      <figure class="wide" data-lightbox>
+        <img src="assets/08-ettoday-8365874.jpg" alt="媒体人像配图" loading="lazy" />
+        <figcaption>媒体人像 · 叙事仍在进行时</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 9 finale + poll -->
+  <section class="ch" id="ch9" data-ch="09 · 落子无悔" data-stone="BE">
+    <div class="ch-inner finale-inner">
+      <header class="ch-head">
+        <h2>官子 · 落子无悔 / 复盘不能</h2>
+      </header>
+      <p>把棋盘折起来：戏剧卖过氛围，粉丝写过平行宇宙，丑闻撕开滤镜，律师函划了法律边界。中间没有任何「官宣恋情」——只有可核对声明、报道，与大量饭圈口号。</p>
+      <button type="button" class="enter-btn fold-btn" id="btnFold">胜着 · 折叠棋盘 → BE 条</button>
+      <div class="be-strip" id="beStrip" hidden>
+        <p class="be-line">落子无悔</p>
+        <p class="be-line alt">复盘不能</p>
+        <p class="be-sub">郝胡不是互撕对手，是「氛围—粉圈—切割—法律」四劫循环里的两个坐标。</p>
+      </div>
+
+      <div class="poll" id="poll" data-poll="goban-ko-v1">
+        <h3>本地一票 · 你怎么框这盘棋？</h3>
+        <p class="poll-note mono">只存浏览器 localStorage · 不上传</p>
+        <button type="button" class="poll-opt" data-val="law"><span class="bar"></span><span>律师函 / 名誉权维权是主轴 <i class="pct"></i></span></button>
+        <button type="button" class="poll-opt" data-val="promo"><span class="bar"></span><span>剧宣氛围 + 粉圈脑补是主轴 <i class="pct"></i></span></button>
+        <button type="button" class="poll-opt" data-val="backlash"><span class="bar"></span><span>提纯反噬 / 乐子回踩是主轴 <i class="pct"></i></span></button>
+        <button type="button" class="poll-opt" data-val="unclear"><span class="bar"></span><span>证据分层不够，不下总判 <i class="pct"></i></span></button>
+        <div class="poll-result" id="pollResult" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-foot">
+    <h3>给路人的棋谱说明</h3>
+    <ul>
+      <li>本页是<strong>粉丝解说互动站</strong>，非官方、非律师意见、非恋情实锤合集。</li>
+      <li>「可核实」：公开声明、播出信息、主流媒体报道转述；「传闻」：饭圈口号、社交观察、未证实瓜料。</li>
+      <li>三角框架：戏侧氛围 → 粉丝 shipping → 郝 2021 丑闻 → 胡营反腐切割 → 2025 律师函。不是演员互撕 feud，也不是李明德线。</li>
+      <li>事实节点整理至约 <time datetime="2026-10">2026-10</time>（Asia/Shanghai）。图片来自新闻 CDN / Wikimedia / 平台公开物料，仅供解说。</li>
+      <li>无个人品牌、无站外导流。落子音效默认静音。</li>
+    </ul>
+    <p class="mono foot-meta">十九路·劫争仪 / Goban Ko-Apparatus · facts ≈ 2026-10</p>
+  </footer>
+</main>
+
+<!-- Danmaku holographic gallery -->
+<div class="danmaku-layer" id="danmakuLayer" hidden>
+  <div class="danmaku-panel">
+    <header>
+      <h3>天元 · 蚂蚁弹幕全息廊</h3>
+      <button type="button" id="btnCloseDanmaku" aria-label="关闭">✕</button>
+    </header>
+    <p class="danmaku-note">以下为饭圈常见话术<strong>示意</strong>（非实时抓取），含祝福与回踩两极——点天元仅作交互寓言。</p>
+    <div class="danmaku-stage" id="danmakuStage"></div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" hidden>
+  <button type="button" class="lb-close" id="lbClose" aria-label="关闭">✕</button>
+  <img id="lbImg" alt="" />
+  <p id="lbCap" class="lb-cap"></p>
+</div>
+
+<script src="js/goban.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
